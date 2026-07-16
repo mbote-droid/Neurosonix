@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import UploadSection from './components/UploadSection'
 import AnalysisResults from './components/AnalysisResults'
@@ -16,12 +16,39 @@ interface AudioMetadata {
   diarization_segments: any[]
   f1_hz: number | null
   f2_hz: number | null
+  duration_sec: number
+  sample_rate: number
+  spectral_centroid_hz: number
+  rms_energy: number
 }
 
 function App() {
   const [audioData, setAudioData] = useState<AudioMetadata | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [darkMode, setDarkMode] = useState(false)
+
+  // Initialize dark mode from localStorage
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true'
+    setDarkMode(savedDarkMode)
+    updateTheme(savedDarkMode)
+  }, [])
+
+  const updateTheme = (isDark: boolean) => {
+    if (isDark) {
+      document.body.classList.add('dark-mode')
+    } else {
+      document.body.classList.remove('dark-mode')
+    }
+  }
+
+  const handleThemeToggle = () => {
+    const newDarkMode = !darkMode
+    setDarkMode(newDarkMode)
+    localStorage.setItem('darkMode', newDarkMode.toString())
+    updateTheme(newDarkMode)
+  }
 
   const handleUpload = async (file: File) => {
     setLoading(true)
@@ -52,8 +79,13 @@ function App() {
   return (
     <div className="neurosonix-app">
       <header className="header">
-        <h1>NeuroSonix</h1>
-        <p>Locale-Agnostic Audio Annotation Pipeline</p>
+        <div className="header-content">
+          <h1>🎙️ NeuroSonix</h1>
+          <p>Locale-Agnostic Audio Annotation Pipeline</p>
+        </div>
+        <button className="theme-toggle" onClick={handleThemeToggle}>
+          {darkMode ? '☀️ Light' : '🌙 Dark'}
+        </button>
       </header>
 
       <main className="main-container">
@@ -68,14 +100,19 @@ function App() {
               onClick={() => setAudioData(null)}
               className="reset-button"
             >
-              Upload Another File
+              📤 Upload Another File
             </button>
           </>
         )}
       </main>
 
       <footer className="footer">
-        <p>NeuroSonix v0.1.0 | Physician-Scientist AI Tools</p>
+        <p>
+          NeuroSonix v1.0 | Physician-Scientist AI Tools |
+          <a href="https://github.com/mbote-droid/neurosonix" target="_blank" rel="noreferrer" style={{ color: 'inherit', marginLeft: '0.5rem' }}>
+            GitHub
+          </a>
+        </p>
       </footer>
     </div>
   )

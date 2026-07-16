@@ -6,6 +6,7 @@ interface ExportSectionProps {
 
 export default function ExportSection({ fileId }: ExportSectionProps) {
   const [exporting, setExporting] = useState(false)
+  const [exported, setExported] = useState<'json' | 'csv' | null>(null)
 
   const handleExport = async (format: 'json' | 'csv') => {
     setExporting(true)
@@ -27,8 +28,11 @@ export default function ExportSection({ fileId }: ExportSectionProps) {
       a.download = `annotations_${fileId}.${format}`
       a.click()
       URL.revokeObjectURL(url)
+
+      setExported(format)
+      setTimeout(() => setExported(null), 3000)
     } catch (err) {
-      alert('Export failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
+      alert('❌ Export failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
       setExporting(false)
     }
@@ -36,7 +40,7 @@ export default function ExportSection({ fileId }: ExportSectionProps) {
 
   return (
     <section className="export-section">
-      <h2>Step 4: Export</h2>
+      <h2>Step 4: Export Results</h2>
 
       <div className="export-buttons">
         <button
@@ -44,20 +48,23 @@ export default function ExportSection({ fileId }: ExportSectionProps) {
           disabled={exporting}
           className="export-button json"
         >
-          📄 Export as JSON
+          {exported === 'json' ? '✅ Downloaded!' : '📄 JSON'}
         </button>
         <button
           onClick={() => handleExport('csv')}
           disabled={exporting}
           className="export-button csv"
         >
-          📊 Export as CSV
+          {exported === 'csv' ? '✅ Downloaded!' : '📊 CSV'}
         </button>
       </div>
 
-      <p className="export-info">
-        Export your annotations for use in ML training or further processing.
-      </p>
+      <div className="export-info">
+        <p>📤 Export your annotations for use in ML pipelines, spreadsheets, or further analysis.</p>
+        <p style={{marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--text-lighter)'}}>
+          JSON: Full metadata with nested structure | CSV: Tabular format for spreadsheets
+        </p>
+      </div>
     </section>
   )
 }

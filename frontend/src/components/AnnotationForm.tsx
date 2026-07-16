@@ -18,6 +18,14 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
   })
   const [saving, setSaving] = useState(false)
 
+  const emotionEmojis: { [key: string]: string } = {
+    neutral: '😐',
+    calm: '😌',
+    excited: '😃',
+    sad: '😢',
+    angry: '😠'
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -31,6 +39,11 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
   }
 
   const handleAddAnnotation = async () => {
+    if (!formData.text.trim()) {
+      alert('⚠️ Please enter transcription text')
+      return
+    }
+
     setSaving(true)
     try {
       const response = await fetch(`http://localhost:8000/api/annotate/${fileId}`, {
@@ -42,7 +55,6 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
       if (!response.ok) throw new Error('Failed to save annotation')
 
       setAnnotations([...annotations, formData])
-      // Reset form
       setFormData({
         speaker: 'Speaker 1',
         timestamp_start: formData.timestamp_end,
@@ -54,7 +66,7 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
         notes: '',
       })
     } catch (err) {
-      alert('Error saving annotation: ' + (err instanceof Error ? err.message : 'Unknown error'))
+      alert('❌ Error saving annotation: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
       setSaving(false)
     }
@@ -65,19 +77,19 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
       <h2>Step 3: Annotate Audio</h2>
 
       <div className="annotation-form">
-        <div className="form-group">
-          <label>Speaker</label>
-          <select name="speaker" value={formData.speaker} onChange={handleInputChange}>
-            <option>Speaker 1</option>
-            <option>Speaker 2</option>
-            <option>Speaker 3</option>
-            <option>Speaker 4</option>
-          </select>
-        </div>
-
         <div className="form-row">
           <div className="form-group">
-            <label>Start (sec)</label>
+            <label>🎤 Speaker</label>
+            <select name="speaker" value={formData.speaker} onChange={handleInputChange}>
+              <option>Speaker 1</option>
+              <option>Speaker 2</option>
+              <option>Speaker 3</option>
+              <option>Speaker 4</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>⏱️ Start (sec)</label>
             <input
               type="number"
               name="timestamp_start"
@@ -86,8 +98,9 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
               step="0.1"
             />
           </div>
+
           <div className="form-group">
-            <label>End (sec)</label>
+            <label>⏹️ End (sec)</label>
             <input
               type="number"
               name="timestamp_end"
@@ -99,29 +112,30 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
         </div>
 
         <div className="form-group">
-          <label>Transcription</label>
+          <label>📝 What was said?</label>
           <textarea
             name="text"
             value={formData.text}
             onChange={handleInputChange}
-            placeholder="What was said..."
+            placeholder="Enter the transcription text..."
+            rows={3}
           />
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Emotion</label>
+            <label>{emotionEmojis[formData.emotion]} Emotion</label>
             <select name="emotion" value={formData.emotion} onChange={handleInputChange}>
-              <option value="neutral">Neutral</option>
-              <option value="calm">Calm</option>
-              <option value="excited">Excited</option>
-              <option value="sad">Sad</option>
-              <option value="angry">Angry</option>
+              <option value="neutral">😐 Neutral</option>
+              <option value="calm">😌 Calm</option>
+              <option value="excited">😃 Excited</option>
+              <option value="sad">😢 Sad</option>
+              <option value="angry">😠 Angry</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label>Clarity (1-5)</label>
+            <label>🎯 Clarity ({formData.clarity}/5)</label>
             <input
               type="range"
               name="clarity"
@@ -130,11 +144,10 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
               value={formData.clarity}
               onChange={handleInputChange}
             />
-            <span>{formData.clarity}</span>
           </div>
 
           <div className="form-group">
-            <label>Confidence (0-1)</label>
+            <label>💯 Confidence</label>
             <input
               type="number"
               name="confidence"
@@ -148,28 +161,33 @@ export default function AnnotationForm({ fileId }: AnnotationFormProps) {
         </div>
 
         <div className="form-group">
-          <label>Notes</label>
+          <label>📋 Notes (optional)</label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleInputChange}
-            placeholder="Optional notes..."
+            placeholder="Add any additional notes..."
+            rows={2}
           />
         </div>
 
         <button onClick={handleAddAnnotation} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Annotation'}
+          {saving ? '💾 Saving...' : '✅ Save Annotation'}
         </button>
       </div>
 
       {annotations.length > 0 && (
         <div className="annotations-list">
-          <h3>Saved Annotations ({annotations.length})</h3>
+          <h3>📊 Saved Annotations ({annotations.length})</h3>
           {annotations.map((anno, idx) => (
             <div key={idx} className="annotation-item">
-              <strong>{anno.speaker}</strong> ({anno.timestamp_start.toFixed(1)} - {anno.timestamp_end.toFixed(1)}s)
+              <strong>🎤 {anno.speaker}</strong> <span style={{color: 'var(--text-light)'}}>({anno.timestamp_start.toFixed(1)}–{anno.timestamp_end.toFixed(1)}s)</span>
               <p>{anno.text}</p>
-              <small>{anno.emotion} • Clarity: {anno.clarity}/5</small>
+              <small>
+                {emotionEmojis[anno.emotion]} {anno.emotion} •
+                🎯 Clarity {anno.clarity}/5 •
+                💯 Confidence {(anno.confidence * 100).toFixed(0)}%
+              </small>
             </div>
           ))}
         </div>
