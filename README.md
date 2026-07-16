@@ -3,6 +3,11 @@
 [![CI/CD Pipeline](https://github.com/mbote-droid/neurosonix/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/mbote-droid/neurosonix/actions)
 [![Code Coverage](https://codecov.io/gh/mbote-droid/neurosonix/branch/main/graph/badge.svg)](https://codecov.io/gh/mbote-droid/neurosonix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688.svg)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-frontend-61DAFB.svg)](https://react.dev)
+[![Pydantic v2](https://img.shields.io/badge/Pydantic-v2-e92063.svg)](https://docs.pydantic.dev)
+[![Tests](https://img.shields.io/badge/tests-116%20passing-brightgreen.svg)](#testing)
 
 A **production-ready SaaS platform** for audio analysis, annotation, and export. Built with React + FastAPI, containerized with Docker, and deployable in minutes.
 
