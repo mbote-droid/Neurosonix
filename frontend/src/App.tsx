@@ -4,6 +4,7 @@ import UploadSection from './components/UploadSection'
 import AnalysisResults from './components/AnalysisResults'
 import AnnotationForm from './components/AnnotationForm'
 import ExportSection from './components/ExportSection'
+import EvaluationDashboard from './components/EvaluationDashboard'
 
 interface AudioMetadata {
   file_id: string
@@ -27,6 +28,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [darkMode, setDarkMode] = useState(false)
+  const [view, setView] = useState<'annotate' | 'evaluate'>('annotate')
 
   // Initialize dark mode from localStorage
   useEffect(() => {
@@ -83,13 +85,34 @@ function App() {
           <h1>🎙️ NeuroSonix</h1>
           <p>Locale-Agnostic Audio Annotation Pipeline</p>
         </div>
-        <button className="theme-toggle" onClick={handleThemeToggle}>
-          {darkMode ? '☀️ Light' : '🌙 Dark'}
-        </button>
+        <div className="header-actions">
+          <nav className="view-nav">
+            <button
+              className={view === 'annotate' ? 'active' : ''}
+              onClick={() => setView('annotate')}
+            >
+              Annotate
+            </button>
+            <button
+              className={view === 'evaluate' ? 'active' : ''}
+              onClick={() => setView('evaluate')}
+            >
+              Evaluate
+            </button>
+          </nav>
+          <button className="theme-toggle" onClick={handleThemeToggle}>
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
+        </div>
       </header>
 
       <main className="main-container">
-        {!audioData ? (
+        {view === 'evaluate' ? (
+          <EvaluationDashboard
+            seedTranscript={audioData?.transcription}
+            seedAudioFileId={audioData?.file_id}
+          />
+        ) : !audioData ? (
           <UploadSection onUpload={handleUpload} loading={loading} error={error} />
         ) : (
           <>

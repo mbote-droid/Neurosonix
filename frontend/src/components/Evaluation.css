@@ -1,0 +1,299 @@
+/* Agentic evaluation dashboard — uses the app's CSS variables for theming. */
+
+.eval-dashboard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.eval-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eval-head h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.4rem;
+}
+
+.eval-sub {
+  color: var(--text-light);
+  margin: 0.35rem 0 1.25rem;
+  font-size: 0.92rem;
+}
+
+.eval-mode-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.eval-mode-badge.live {
+  color: var(--success);
+  background: var(--success-light);
+}
+.eval-mode-badge.degraded {
+  color: var(--warning);
+  background: var(--warning-light);
+}
+
+.eval-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.eval-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 260px;
+}
+.eval-field > span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+.eval-field select,
+.eval-field input,
+.eval-field textarea,
+.cmp-row input,
+.cmp-row textarea {
+  background: var(--surface-secondary);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.eval-field textarea,
+.cmp-row textarea {
+  resize: vertical;
+}
+
+.eval-mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.eval-mode-toggle button {
+  background: var(--surface-secondary);
+  color: var(--text-light);
+  border: none;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.eval-mode-toggle button.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.eval-goal {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.eval-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.eval-run {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.eval-run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.eval-secondary {
+  background: var(--surface-secondary);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.eval-error {
+  color: var(--danger);
+  background: var(--danger-light);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+.eval-empty {
+  color: var(--text-light);
+}
+
+/* ---- Single result panel ---- */
+.eval-panel {
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  background: var(--surface-secondary);
+}
+.eval-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.eval-model {
+  font-weight: 700;
+  color: var(--text);
+}
+.eval-degraded {
+  margin-left: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--warning);
+  background: var(--warning-light);
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+.eval-synth {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.eval-synth-max {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-lighter);
+}
+.eval-response {
+  margin: 1rem 0;
+}
+.eval-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-lighter);
+}
+.eval-response p {
+  margin: 0.3rem 0 0;
+  color: var(--text);
+  font-style: italic;
+}
+.eval-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.eval-score-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+.eval-dim {
+  color: var(--text);
+  font-weight: 600;
+}
+.eval-dim-score {
+  color: var(--text-light);
+  font-weight: 700;
+}
+.eval-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.35rem 0 0.25rem;
+}
+.eval-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.eval-rationale {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+/* ---- Comparison ---- */
+.cmp-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+.cmp-model-name {
+  flex: 0 0 140px;
+}
+.cmp-remove {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0.5rem 0.65rem;
+}
+.cmp-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.cmp-panel {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.cmp-table th,
+.cmp-table td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+  text-align: center;
+  color: var(--text);
+}
+.cmp-table th {
+  background: var(--surface-secondary);
+  font-weight: 700;
+}
+.cmp-dim {
+  text-align: left !important;
+  color: var(--text-light) !important;
+  font-weight: 600;
+}
+.cmp-winner {
+  color: var(--success) !important;
+}
+.cmp-total-row td {
+  font-weight: 800;
+  background: var(--surface-secondary);
+}
+.cmp-crown {
+  font-size: 0.9rem;
+}
