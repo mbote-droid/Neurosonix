@@ -106,6 +106,20 @@ ENV=production
 PYTHONUNBUFFERED=1
 ```
 
+### Agentic evaluation (LLM) variables
+
+The evaluation swarm runs **offline by default** — no configuration required.
+To enable live LLM scoring, set:
+
+```
+NEUROSONIX_LLM_PROVIDER=anthropic   # or "none" to force offline
+NEUROSONIX_LLM_MODEL=claude-opus-4-8
+ANTHROPIC_API_KEY=sk-ant-...         # required only for live scoring
+```
+
+Without `ANTHROPIC_API_KEY`, the platform serves deterministic heuristic
+scores and every result is flagged `degraded` — the app stays fully functional.
+
 ### 4. Deploy
 Push to `main` branch — Render auto-deploys.
 

@@ -38,7 +38,7 @@ jobs:
 
     - name: Run pytest
       run: |
-        pytest tests/ -v --tb=short --cov=services --cov-report=xml
+        pytest tests/ -v --tb=short --cov=services --cov=agentic --cov=routes --cov-report=xml
 
     - name: Upload coverage
       uses: codecov/codecov-action@v3
