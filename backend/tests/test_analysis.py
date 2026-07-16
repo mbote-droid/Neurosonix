@@ -5,6 +5,8 @@ import soundfile as sf
 from services.analysis import AudioAnalyzer
 from models import QualityLevel, EmotionLabel
 import tempfile
+import os
+import time
 
 @pytest.fixture
 def analyzer():
@@ -23,7 +25,13 @@ def test_audio_file():
 
         sf.write(f.name, y, sr)
         yield f.name
-        Path(f.name).unlink()  # Cleanup
+
+        # Windows file locking: wait before cleanup
+        time.sleep(0.1)
+        try:
+            os.remove(f.name)
+        except OSError:
+            pass  # File might be locked; ignore
 
 @pytest.fixture
 def low_snr_audio_file():
@@ -35,7 +43,13 @@ def low_snr_audio_file():
         y = np.random.randn(sr * duration) * 0.5
         sf.write(f.name, y, sr)
         yield f.name
-        Path(f.name).unlink()
+
+        # Windows file locking: wait before cleanup
+        time.sleep(0.1)
+        try:
+            os.remove(f.name)
+        except OSError:
+            pass  # File might be locked; ignore
 
 class TestAudioAnalyzer:
     """Test suite for AudioAnalyzer."""
