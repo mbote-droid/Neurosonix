@@ -18,9 +18,12 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from loguru import logger
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
+from database import get_db
 from agentic import rubrics as rubric_engine
 from agentic import scenarios as scenario_lib
+from agentic import store
 from agentic.comparison import ModelComparator
 from agentic.schemas import (
     Domain,
@@ -116,13 +119,14 @@ async def list_rubrics() -> List[RubricCriterion]:
 async def evaluate(
     req: EvaluateRequest,
     swarm: EvaluationSwarm = Depends(get_swarm),
+    db: Session = Depends(get_db),
 ) -> EvaluationResult:
     """Evaluate a transcript under a scenario with the five-agent swarm."""
     scenario = scenario_lib.scenario_by_id(req.scenario_id)
     if scenario is None:
         raise HTTPException(status_code=404, detail="Unknown scenario_id")
     try:
-        return swarm.evaluate(
+        result = swarm.evaluate(
             scenario,
             req.transcript,
             model_name=req.model_name,
@@ -131,12 +135,44 @@ async def evaluate(
     except Exception as e:  # pragma: no cover - swarm is designed not to raise
         logger.error(f"Evaluation failed: {e}")
         raise HTTPException(status_code=500, detail="Evaluation failed")
+    store.save_evaluation(db, result)  # best-effort; never blocks the response
+    return result
+
+
+@router.get("/results", response_model=List[EvaluationResult])
+async def list_results(
+    limit: int = Query(default=50, ge=1, le=500),
+    db: Session = Depends(get_db),
+) -> List[EvaluationResult]:
+    """List recent evaluations, newest first (benchmark history)."""
+    return store.list_evaluations(db, limit=limit)
+
+
+@router.get("/results/{result_id}", response_model=EvaluationResult)
+async def get_result(
+    result_id: str, db: Session = Depends(get_db)
+) -> EvaluationResult:
+    """Fetch a single stored evaluation by id."""
+    result = store.get_evaluation(db, result_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Unknown result_id")
+    return result
+
+
+@router.get("/comparisons", response_model=List[ModelComparison])
+async def list_comparisons_endpoint(
+    limit: int = Query(default=50, ge=1, le=500),
+    db: Session = Depends(get_db),
+) -> List[ModelComparison]:
+    """List recent model comparisons, newest first."""
+    return store.list_comparisons(db, limit=limit)
 
 
 @router.post("/compare", response_model=ModelComparison)
 async def compare(
     req: CompareRequest,
     comparator: ModelComparator = Depends(get_comparator),
+    db: Session = Depends(get_db),
 ) -> ModelComparison:
     """Compare two or more models' transcripts on the same scenario."""
     scenario = scenario_lib.scenario_by_id(req.scenario_id)
@@ -152,7 +188,8 @@ async def compare(
             req.model_transcripts,
             audio_file_id=req.audio_file_id,
         )
-        return comparison
     except Exception as e:  # pragma: no cover
         logger.error(f"Comparison failed: {e}")
         raise HTTPException(status_code=500, detail="Comparison failed")
+    store.save_comparison(db, comparison)  # best-effort persistence
+    return comparison

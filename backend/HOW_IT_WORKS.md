@@ -112,6 +112,60 @@ NeuroSonix is a **locale-agnostic audio annotation pipeline** for AI training da
 
 ---
 
+## Phase 8: Agentic Evaluation Pipeline
+
+Scores a voice-agent conversation end to end. Input is a transcript (from the
+Whisper/Gemini step above, or pasted directly) plus a chosen role-play scenario.
+
+23. **User submits evaluation** via POST `/api/evaluate/` with `scenario_id`,
+    `transcript`, and optional `model_name` / `audio_file_id`.
+24. **Resolve scenario** — look up the `ScenarioTemplate` by id (persona,
+    policies, user goal) from the scenario library; unknown id → 404.
+25. **Resolve LLM provider** — `get_default_client()` reads
+    `NEUROSONIX_LLM_PROVIDER` (default `anthropic`). With a resolvable API key
+    it returns an `AnthropicLLMClient` (model `claude-opus-4-8`); otherwise a
+    `NullLLMClient` so the pipeline runs fully offline.
+26. **Role-play agent replies** — the transcript is fed as the user turn to an
+    agent primed with the scenario's system prompt. With an LLM, it generates a
+    reply; offline, it returns a deterministic, role-appropriate reply. The
+    result is flagged `degraded` when no LLM was used.
+27. **Five evaluator agents score the reply** — one per dimension: Task
+    Completion, Conversational Naturalness, Audio Comprehension, Instruction
+    Adherence, Technical Clarity. Each uses the LLM with structured JSON output
+    (`output_config.format`, guaranteed-parseable) against its rubric; on any
+    LLM failure it falls back to a transparent per-dimension heuristic. Scores
+    are clamped to 1–5 and confidence to 0.0–1.0.
+28. **Synthesize** — combine the five scores into one confidence-weighted mean
+    (unweighted mean if all confidence is zero; scale midpoint if empty).
+29. **Assemble `EvaluationResult`** — id, scenario, model, transcript, reply,
+    per-agent scores, synthesized score, and an overall `degraded` flag (true
+    if the reply or any score was degraded).
+30. **Persist (best-effort)** — save to the `evaluation_results` table via
+    SQLAlchemy `merge` (idempotent on id). A persistence failure is logged and
+    swallowed so it never breaks the response.
+31. **Return JSON** to the frontend, which renders per-dimension bars, the
+    synthesized score, the agent reply, and a live/offline mode badge.
+
+## Phase 9: Model Comparison
+
+32. **User submits comparison** via POST `/api/evaluate/compare` with a
+    `scenario_id` and a `model_transcripts` map (e.g. Whisper vs Gemini
+    transcripts of the same audio).
+33. **Evaluate each model** — the swarm (steps 26–29) runs once per transcript,
+    tagged with that model's name.
+34. **Rank and pick winner** — highest synthesized score wins; ties break
+    deterministically toward the first model in insertion order. Persist to the
+    `model_comparisons` table.
+35. **Return `ModelComparison`** — per-model entries with per-dimension scores
+    and the winner, rendered as a side-by-side table with the winner highlighted.
+
+**History & export:** `GET /api/evaluate/results` (and `/results/{id}`) and
+`GET /api/evaluate/comparisons` return stored records newest-first for benchmark
+review and export. `GET /api/evaluate/health` reports whether a live LLM backs
+the swarm.
+
+---
+
 ## Key Design Decisions
 
 ### Why Energy-Based VAD (Not AI)?
@@ -153,6 +207,9 @@ NeuroSonix is a **locale-agnostic audio annotation pipeline** for AI training da
 | Formant detection | No peaks found | Return None for F1/F2 |
 | Emotion classification | NaN values | Default to Neutral, confidence 0.0 |
 | SNR calculation | Zero power | Clamp to 1e-10 to avoid log(0) |
+| LLM provider (role-play/evaluators) | No API key / SDK / API error | `NullLLMClient`; deterministic reply + per-dimension heuristic scores, result flagged `degraded` |
+| Result persistence | DB write fails | Log and swallow; evaluation still returned to the caller |
+| Model output out of range | Score >5 or confidence >1 | Clamp to 1–5 / 0.0–1.0 rather than reject |
 
 ---
 
