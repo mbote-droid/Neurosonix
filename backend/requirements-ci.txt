@@ -1,0 +1,24 @@
+# CI / test dependencies.
+#
+# This is the production requirements.txt minus the two heavy, optional,
+# lazy-loaded ML packages (openai-whisper, pyannote.audio). Neither is imported
+# at module load — transcription and diarization import them lazily and degrade
+# gracefully when absent — so they are not needed to import the app or run the
+# test suite. Excluding them keeps CI fast and avoids fragile source builds
+# (e.g. old whisper sdists that break on setuptools >= 81).
+#
+# Full runtime deps for real deployment live in requirements.txt (used by Docker).
+
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+librosa==0.10.0
+scipy==1.11.4
+numpy==1.24.3
+pydub==0.25.1
+sqlalchemy==2.0.23
+python-dotenv==1.0.0
+soundfile==0.12.1
+loguru==0.7.2
+pytest==9.1.1
+pytest-cov

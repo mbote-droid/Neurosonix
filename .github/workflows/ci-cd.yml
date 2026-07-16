@@ -25,8 +25,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-cov black flake8
+        # requirements-ci.txt = production deps minus the heavy, optional,
+        # lazy-loaded ML packages (whisper, pyannote) not needed for tests.
+        pip install -r requirements-ci.txt
+        pip install black flake8
 
     - name: Lint with flake8
       run: |
@@ -57,10 +59,11 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22'
         cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
 
     - name: Install dependencies
       run: npm ci
