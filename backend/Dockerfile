@@ -13,8 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --user --no-cache-dir -r requirements.txt
+# Install Python dependencies.
+# Pin setuptools < 81 for the build: the openai-whisper sdist's setup.py imports
+# pkg_resources, which setuptools >= 81 no longer ships. PIP_CONSTRAINT reaches
+# pip's isolated build environment so the wheel build finds pkg_resources.
+RUN echo "setuptools<81" > /tmp/constraints.txt && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
 FROM python:3.11-slim
