@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from config import CORS_ORIGINS, UPLOAD_DIR, ANNOTATIONS_DIR
 from database import init_db
-from routes import audio, annotate
+from routes import audio, annotate, evaluate
 
 # Initialize database
 init_db()
@@ -28,6 +28,7 @@ app.add_middleware(
 # Register routers
 app.include_router(audio.router)
 app.include_router(annotate.router)
+app.include_router(evaluate.router)
 
 # Create upload/annotations directories
 UPLOAD_DIR.mkdir(exist_ok=True)
