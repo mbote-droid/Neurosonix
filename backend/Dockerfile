@@ -1,7 +1,7 @@
 # Multi-stage build for NeuroSonix backend
 
 # Stage 1: Dependencies
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
