@@ -1,0 +1,18 @@
+# Optional dependencies — production-grade speaker diarization.
+#
+# pyannote.audio provides embedding-based diarization. It is intentionally kept
+# out of requirements.txt because pyannote.audio 2.1.1 requires soundfile<0.11,
+# which conflicts with librosa 0.10.0 (soundfile>=0.12.1). The core pipeline —
+# analysis, transcription, and heuristic (librosa-based) diarization — runs
+# fully without it; DiarizationEngine.diarization_with_pyannote() falls back to
+# the heuristic path on ImportError.
+#
+# To enable pyannote-based diarization, install into an environment with a
+# compatible librosa/soundfile pairing (e.g. librosa 0.9.x + soundfile 0.10.x),
+# separate from the default requirements:
+#
+#   pip install -r requirements-optional.txt
+#
+# and provide a Hugging Face token for the pretrained pipeline if required.
+
+pyannote.audio==2.1.1

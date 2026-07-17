@@ -6,7 +6,11 @@ scipy==1.11.4
 numpy==1.24.3
 pydub==0.25.1
 openai-whisper==20231117
-pyannote.audio==2.1.1
+# pyannote.audio is optional (production-grade diarization). It is NOT a hard
+# requirement: pyannote.audio 2.1.1 pins soundfile<0.11 while librosa 0.10.0
+# needs soundfile>=0.12.1, so the two cannot coexist. Diarization degrades
+# gracefully to the librosa energy/MFCC heuristic when pyannote is absent.
+# To enable it, install in a compatible environment: see requirements-optional.txt
 sqlalchemy==2.0.23
 python-dotenv==1.0.0
 soundfile==0.12.1
