@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: "NeuroSonix: audio annotation and multi-agent evaluation of voice-agent conversations"
+abstract: "Audio annotation and agentic evaluation platform that scores voice-agent conversations across five quality dimensions and four role-play domains, with Whisper and Gemini model comparison."
+authors:
+  - family-names: "Mbote"
+    given-names: "Samuel"
+    orcid: "https://orcid.org/0009-0003-2319-8873"
+    affiliation: "Daktari Genomed Labs"
+repository-code: "https://github.com/mbote-droid/Neurosonix"
+url: "https://github.com/mbote-droid/Neurosonix"
+license: MIT
+version: "1.0.0"
+date-released: "2026-10-07"
+keywords:
+  - "AI evaluation"
+  - "voice agents"
+  - "audio annotation"
+  - "multi-agent systems"
+  - "speech recognition"
+  - "LLM evaluation"

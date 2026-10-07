@@ -155,10 +155,10 @@ All metrics are physics-based and transparent:
 
 ## 🧪 Testing
 
-### Backend Tests (11 unit tests)
+### Backend Tests (133 tests)
 ```bash
 cd backend
-pytest tests/test_analysis.py -v --cov=services
+pytest tests/ -v --cov=services
 ```
 
 **Coverage:**
