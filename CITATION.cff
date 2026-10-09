@@ -10,6 +10,7 @@ authors:
     affiliation: "Daktari Genomed Labs"
 repository-code: "https://github.com/mbote-droid/Neurosonix"
 url: "https://github.com/mbote-droid/Neurosonix"
+doi: "10.5281/zenodo.23267236"
 license: MIT
 version: "1.0.0"
 date-released: "2026-10-07"

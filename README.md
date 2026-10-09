@@ -1,5 +1,6 @@
 # NeuroSonix: Locale-Agnostic Audio Annotation Platform
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23267236.svg)](https://doi.org/10.5281/zenodo.23267236)
 [![CI/CD Pipeline](https://github.com/mbote-droid/neurosonix/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/mbote-droid/neurosonix/actions)
 [![Code Coverage](https://codecov.io/gh/mbote-droid/neurosonix/branch/main/graph/badge.svg)](https://codecov.io/gh/mbote-droid/neurosonix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
